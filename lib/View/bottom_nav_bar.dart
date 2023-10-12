@@ -21,8 +21,8 @@ class _MyCustomBottomNavBarState extends State<MyCustomBottomNavBar> {
 
   // Define your screens here
   final List<Widget> _screens = [
-    const HomeScreen(),
-    const SearchScreen(),
+    HomeScreen(),
+    SearchScreen(),
     const SavedScreen(),
     const SettingScreen(),
   ];

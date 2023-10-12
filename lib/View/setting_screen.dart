@@ -1,7 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/Common/color.dart';
 import 'package:news_app/Common/images.dart';
+import 'package:news_app/View/Auth/Log_in/log_in_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -12,6 +16,23 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   bool isSwitched = false;
+
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // The user is now logged out.
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ),
+      );
+    } catch (e) {
+      // Handle any errors that occurred during the sign-out process.
+      print("Error signing out: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = Get.height;
@@ -23,13 +44,15 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           children: [
             SizedBox(height: h * 0.055),
-            Text(
-              "Settings",
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-                fontSize: h * 0.03,
-                fontFamily: 'Poppins',
+            Center(
+              child: Text(
+                "Settings",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: h * 0.03,
+                  fontFamily: 'Poppins',
+                ),
               ),
             ),
             Center(
@@ -128,21 +151,26 @@ class _SettingScreenState extends State<SettingScreen> {
                               ),
                             ),
                             SizedBox(height: h * 0.04),
-                            Container(
-                              height: h * 0.06,
-                              width: w * 0.5,
-                              decoration: BoxDecoration(
-                                color: pickColor.blue,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Logout",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: h * 0.02,
-                                    fontFamily: 'Poppins',
+                            GestureDetector(
+                              onTap: () {
+                                signOut();
+                              },
+                              child: Container(
+                                height: h * 0.06,
+                                width: w * 0.5,
+                                decoration: BoxDecoration(
+                                  color: pickColor.blue,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Logout",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: h * 0.02,
+                                      fontFamily: 'Poppins',
+                                    ),
                                   ),
                                 ),
                               ),

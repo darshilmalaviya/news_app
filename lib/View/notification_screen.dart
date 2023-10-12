@@ -84,7 +84,7 @@ class NotificationScreen extends StatelessWidget {
                 ),
                 SizedBox(height: h * 0.01),
                 Container(
-                  height: h * 0.13,
+                  height: h * 0.14,
                   width: w * 1,
                   decoration: BoxDecoration(
                     border: Border.all(
@@ -96,7 +96,7 @@ class NotificationScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 4),
                     child: Column(
                       children: [
-                        SizedBox(height: 12),
+                        SizedBox(height: h * 0.02),
                         Text(
                           "Covid live: England hospitality bosses welcome lack of new restrictions; Japan reports first Omicron cluster",
                           style: TextStyle(

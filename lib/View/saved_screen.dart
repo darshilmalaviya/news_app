@@ -71,7 +71,7 @@ class _SavedScreenState extends State<SavedScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const DetailScreen(),
+                          builder: (context) =>   DetailScreen(),
                         ),
                       );
                     },
