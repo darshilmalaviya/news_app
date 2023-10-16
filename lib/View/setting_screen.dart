@@ -97,7 +97,6 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             SizedBox(height: h * 0.02),
             const Divider(thickness: 1, height: 1, color: pickColor.blue),
-            SizedBox(height: h * 0.02),
             GestureDetector(
               onTap: () {
                 showDialog(
@@ -182,33 +181,36 @@ class _SettingScreenState extends State<SettingScreen> {
                   },
                 );
               },
-              child: Row(
-                children: [
-                  Image.asset(
-                    CommonImg.LogOut,
-                    height: h * 0.05,
-                    width: w * 0.05,
-                  ),
-                  SizedBox(width: w * 0.02),
-                  Text(
-                    "Logout",
-                    style: TextStyle(
-                      fontSize: h * 0.02,
-                      fontWeight: FontWeight.w400,
-                      color: pickColor.grey,
-                      fontFamily: 'Poppins',
+              child: Container(
+                color: Colors.transparent,
+                height: h * 0.09,
+                child: Row(
+                  children: [
+                    Image.asset(
+                      CommonImg.LogOut,
+                      height: h * 0.05,
+                      width: w * 0.05,
                     ),
-                  ),
-                  const Spacer(),
-                  Image.asset(
-                    CommonImg.ArrowSetting,
-                    height: 22,
-                    width: 22,
-                  ),
-                ],
+                    SizedBox(width: w * 0.02),
+                    Text(
+                      "Logout",
+                      style: TextStyle(
+                        fontSize: h * 0.02,
+                        fontWeight: FontWeight.w400,
+                        color: pickColor.grey,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const Spacer(),
+                    Image.asset(
+                      CommonImg.ArrowSetting,
+                      height: 22,
+                      width: 22,
+                    ),
+                  ],
+                ),
               ),
             ),
-            SizedBox(height: h * 0.02),
             const Divider(thickness: 1, height: 1, color: pickColor.blue),
           ],
         ),

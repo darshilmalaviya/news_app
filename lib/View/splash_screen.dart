@@ -56,29 +56,32 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomLeft,
-                colors: [
-                  pickColor.SplashtopArea,
-                  pickColor.SplashbottomArea,
-                ],
+      body: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    pickColor.SplashtopArea,
+                    pickColor.SplashbottomArea,
+                  ],
+                ),
+              ),
+              child: Center(
+                child: Image.asset(
+                  CommonImg.splashLogo,
+                ),
               ),
             ),
-            child: Center(
-              child: Image.asset(
-                CommonImg.splashLogo,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:news_app/Controller/get_x_controller.dart';
 
 class SearchCntrl extends GetxController {
   List<Map<String, dynamic>> dataList = [];
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> filteredList = [];
   List<Map<String, dynamic>> searchData = [];
+  bool searchHasData = false;
 
   Future<List<Map<String, dynamic>>?> fetchFirestoreData() async {
     QuerySnapshot querySnapshot =
@@ -18,48 +18,74 @@ class SearchCntrl extends GetxController {
           document.data() as Map<String, dynamic>;
       dataList.add(documentData);
     }
-    print(dataList);
     return dataList;
   }
 
   void search(String query) {
     searchData.clear();
-    for (final item in dataList) {
-      for (int i = 0; i < dataList.length; i++) {
-        dataList[i]['subcategory'].forEach((e) {
-          if (e['Name'].toLowerCase() == query.toLowerCase()) {
-            searchData.add(dataList[i]);
-          }
-        });
-        update(['search']);
-        update(['home']);
-      }
+    for (int i = 0; i < dataList.length; i++) {
+      dataList[i]['subcategory'].forEach((e) {
+        if (e['Name'].toLowerCase().contains(query.toLowerCase())) {
+          searchData.add(dataList[i]['subcategory'][i]);
+          print("SEARCH DATA--->${searchData}");
+        }
+      });
+      update(['search']);
+      update(['home']);
     }
   }
 
-  void filterData({required String query, required int index}) {
+  void filterData(String query) {
+    searchData = [];
+    dataList.forEach((map) {
+      map['subcategory'].forEach((e) {
+        if (e['Name'].toString().toLowerCase().contains(query.toLowerCase())) {
+          searchData.add(e /*['Data']*/);
+          searchHasData = true;
+          update(['search']);
+        }
+      });
+    });
+
+    print(searchData);
+    update(['search']);
+  }
+
+  void drawerFilter({required String query, required int index}) {
     filteredList.clear();
-    if (query == 'For You') {
-      filteredList.addAll(dataList);
-      update(['home']);
-    } else {
-      for (int i = 0; i < dataList.length; i++) {
-        dataList[i]['subcategory'].forEach((e) {
+
+    for (int i = 0; i < dataList.length; i++) {
+      dataList[i]['subcategory'].forEach(
+        (e) {
           if (e['Name'].toLowerCase() == query.toLowerCase()) {
             filteredList.add(dataList[i]);
           }
-        });
-        update(['search']);
-      }
+        },
+      );
+      update(['search']);
     }
+  }
+
+  void homeFilter({required String query}) {
+    filteredList.clear();
+    for (int i = 0; i < dataList.length; i++) {
+      if (dataList[i]['category'].toLowerCase() == query.toLowerCase()) {
+        filteredList.add(dataList[i]);
+      }
+      update(['home']);
+    }
+  }
+
+  data() async {
+    await fetchFirestoreData();
+    filteredList.addAll(dataList);
+    searchData.addAll(dataList);
+    Get.forceAppUpdate();
   }
 
   @override
   void onInit() {
     super.onInit();
-    fetchFirestoreData();
-    filterData(query: 'For You', index: 0);
-    filteredList.addAll(dataList);
-    searchData.addAll(dataList);
+    data();
   }
 }

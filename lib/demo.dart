@@ -1,35 +1,84 @@
 import 'package:flutter/material.dart';
 
-class Demo extends StatelessWidget {
+class Demo extends StatefulWidget {
   const Demo({super.key});
 
   @override
+  State<Demo> createState() => _DemoState();
+}
+
+class _DemoState extends State<Demo> {
+  final List<Map<String, dynamic>> maps = [
+    {'name': 'John Doe', 'age': 30},
+    {'name': 'Jane Doe', 'age': 25},
+    {'name': 'Peter Parker', 'age': 20},
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> data = [
-      {'name': 'Alice', 'age': 25},
-      {'name': 'Bob', 'age': 30},
-      {'name': 'Charlie', 'age': 22},
-      // ... other map entries
-    ];
-
-    List<Map<String, dynamic>> filteredData =
-        data.where((entry) => entry['age'] > 25).toList();
-
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Filtered Data'),
+          title: Text('Search Example'),
         ),
-        body: Column(
-          children: [
-            Text('Original Data:'),
-            for (var entry in data) Text('${entry['name']} - ${entry['age']}'),
-            Text('Filtered Data:'),
-            for (var entry in filteredData)
-              Text('${entry['name']} - ${entry['age']}'),
-          ],
-        ),
+        body: SearchWidget(maps: maps),
       ),
+    );
+  }
+}
+
+class SearchWidget extends StatefulWidget {
+  final List<Map<String, dynamic>> maps;
+
+  const SearchWidget({Key? key, required this.maps}) : super(key: key);
+
+  @override
+  _SearchWidgetState createState() => _SearchWidgetState();
+}
+
+class _SearchWidgetState extends State<SearchWidget> {
+  final TextEditingController _searchController = TextEditingController();
+
+  List<Map<String, dynamic>> _searchResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchController.addListener(() {
+      _updateSearchResults();
+    });
+  }
+
+  void _updateSearchResults() {
+    final searchQuery = _searchController.text;
+
+    _searchResults = widget.maps.where((map) {
+      return map.keys.any((key) => map[key].toString().contains(searchQuery));
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(hintText: 'Search'),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: _searchResults.length,
+          itemBuilder: (context, index) {
+            final map = _searchResults[index];
+
+            return ListTile(
+              title: Text(map.keys.first),
+              subtitle: Text(map.values.first.toString()),
+            );
+          },
+        ),
+      ],
     );
   }
 }

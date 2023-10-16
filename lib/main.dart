@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:news_app/View/splash_screen.dart';
-
-import 'demo.dart';
+import 'package:news_app/demo.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
