@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/Common/color.dart';
 import 'package:news_app/Controller/get_x_controller.dart';
+import 'package:news_app/Services/Shared_pref_services/pref_service.dart';
 import 'package:news_app/View/Auth/Log_in/log_in_screen.dart';
 import '../../../Common/images.dart';
 import '../../bottom_nav_bar.dart';
@@ -98,7 +99,7 @@ class SignUpScreen extends StatelessWidget {
                         RegExp passwordExp = RegExp(
                             r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$&*~]).{8,}$');
                         if (controller.passwordcntrl.text !=
-                            controller.confirmpasswordcntrl.text) {
+                            controller.confirmPasswordcntrl.text) {
                           return 'password and confirm password doesnt match';
                         } else {
                           if (value!.trim().isEmpty) {
@@ -109,7 +110,7 @@ class SignUpScreen extends StatelessWidget {
                         }
                         return null;
                       },
-                      obscureText: controller.obsecure,
+                      obscureText: controller.obSecure,
                       decoration: InputDecoration(
                         hintText: "Enter Password",
                         hintStyle: TextStyle(
@@ -123,14 +124,14 @@ class SignUpScreen extends StatelessWidget {
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            controller.obsecure
+                            controller.obSecure
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             color: pickColor.black,
                           ),
                           onPressed: () {
-                            controller.obsecure = !controller
-                                .obsecure; // Toggle the obscureText value
+                            controller.obSecure = !controller
+                                .obSecure; // Toggle the obscureText value
                             controller.update(['register screen']);
                           },
                         ),
@@ -144,12 +145,12 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: h * 0.03),
                     TextFormField(
-                      controller: controller.confirmpasswordcntrl,
+                      controller: controller.confirmPasswordcntrl,
                       validator: (value) {
                         RegExp passwordExp = RegExp(
                             r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$&*~]).{8,}$');
                         if (controller.passwordcntrl.text !=
-                            controller.confirmpasswordcntrl.text) {
+                            controller.confirmPasswordcntrl.text) {
                           return 'password and confirm password doesnt match';
                         } else {
                           if (value!.trim().isEmpty) {
@@ -161,7 +162,7 @@ class SignUpScreen extends StatelessWidget {
 
                         return null;
                       },
-                      obscureText: controller.obsecure,
+                      obscureText: controller.obSecure,
                       decoration: InputDecoration(
                         hintText: "Enter Confirm Password",
                         hintStyle: TextStyle(
@@ -175,11 +176,11 @@ class SignUpScreen extends StatelessWidget {
                         ),
                         suffixIcon: IconButton(
                           onPressed: () {
-                            controller.obsecure = !controller.obsecure;
+                            controller.obSecure = !controller.obSecure;
                             controller.update(['register screen']);
                           },
                           icon: Icon(
-                            controller.obsecure
+                            controller.obSecure
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             color: pickColor.black,
@@ -194,64 +195,79 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: h * 0.08),
-                    GestureDetector(
-                      onTap: () async {
-                        if (formKey.currentState!.validate()) {
-                          try {
-                            UserCredential userCredential = await controller
-                                .auth
-                                .createUserWithEmailAndPassword(
-                              email: controller.emailcntrl.text,
-                              password: controller.passwordcntrl.text,
-                            );
-                            if (kDebugMode) {
-                              print("USER ID ${userCredential.user!.uid}");
-                            }
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Register Succesfully"),
+                    getCntrl.loading
+                        ? const Center(child: CircularProgressIndicator())
+                        : GestureDetector(
+                            onTap: () async {
+                              if (formKey.currentState!.validate()) {
+                                getCntrl.loading = true;
+                                getCntrl.update(['register screen']);
+                                try {
+                                  UserCredential userCredential =
+                                      await controller.auth
+                                          .createUserWithEmailAndPassword(
+                                    email: controller.emailcntrl.text,
+                                    password: controller.passwordcntrl.text,
+                                  );
+                                  await getCntrl.saved
+                                      .doc(userCredential.user!.uid)
+                                      .set({
+                                    "email": getCntrl.emailcntrl.text,
+                                    "savedList": [],
+                                  });
+                                  PrefService.setValue(
+                                      'docId', userCredential.user!.uid);
+                                  PrefService.setValue('isLogged', true);
+                                  print(PrefService.getString('docId'));
+                                  getCntrl.loading = false;
+                                  getCntrl.update(['register screen']);
+                                  if (kDebugMode) {
+                                    print(
+                                        "USER ID ${userCredential.user!.uid}");
+                                  }
+
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const MyCustomBottomNavBar(),
+                                    ),
+                                  );
+                                } on FirebaseAuthException catch (e) {
+                                  getCntrl.loading = false;
+                                  getCntrl.update(['register screen']);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("${e.message}"),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            child: Center(
+                              child: Container(
+                                height: h * 0.07,
+                                width: w * 0.7,
+                                decoration: BoxDecoration(
+                                  color: pickColor.blue,
+                                  borderRadius: BorderRadius.circular(
+                                    7,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Sign Up",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: h * 0.023,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ),
                               ),
-                            );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const MyCustomBottomNavBar(),
-                              ),
-                            );
-                          } on FirebaseAuthException catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("${e.message}"),
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      child: Center(
-                        child: Container(
-                          height: h * 0.07,
-                          width: w * 0.7,
-                          decoration: BoxDecoration(
-                            color: pickColor.blue,
-                            borderRadius: BorderRadius.circular(
-                              7,
                             ),
                           ),
-                          child: Center(
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: h * 0.023,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                     SizedBox(height: h * 0.07),
                     GestureDetector(
                       onTap: () async {

@@ -1,37 +1,18 @@
-// ignore_for_file: use_build_context_synchronously
-
+// ignore_for_file: use_build_context_synchronously, must_be_immutable
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/Common/color.dart';
 import 'package:news_app/Common/images.dart';
-import 'package:news_app/View/Auth/Log_in/log_in_screen.dart';
+import 'package:news_app/Controller/get_x_controller.dart';
+import '../Services/Shared_pref_services/pref_service.dart';
+import 'Auth/Log_in/log_in_screen.dart';
 
-class SettingScreen extends StatefulWidget {
-  const SettingScreen({super.key});
-
-  @override
-  State<SettingScreen> createState() => _SettingScreenState();
-}
-
-class _SettingScreenState extends State<SettingScreen> {
+class SettingScreen extends StatelessWidget {
+  SettingScreen({super.key});
   bool isSwitched = false;
 
-  Future<void> signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      // The user is now logged out.
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        ),
-      );
-    } catch (e) {
-      // Handle any errors that occurred during the sign-out process.
-      print("Error signing out: $e");
-    }
-  }
+  GetCntrl getCntrl = Get.put(GetCntrl());
 
   @override
   Widget build(BuildContext context) {
@@ -81,18 +62,22 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                 ),
                 const Spacer(),
-                Switch(
-                  value: isSwitched,
-                  onChanged: (value) {
-                    setState(() {
-                      isSwitched = value;
-                    });
+                GetBuilder<GetCntrl>(
+                  id: 'setting',
+                  builder: (controller) {
+                    return Switch(
+                      value: isSwitched,
+                      onChanged: (value) {
+                        isSwitched = value;
+                        getCntrl.update(['setting']);
+                      },
+                      inactiveThumbColor: pickColor.blue,
+                      inactiveTrackColor: pickColor.black,
+                      activeTrackColor: pickColor.blue,
+                      activeColor: pickColor.blue,
+                    );
                   },
-                  inactiveThumbColor: pickColor.blue,
-                  inactiveTrackColor: pickColor.black,
-                  activeTrackColor: pickColor.blue,
-                  activeColor: pickColor.blue,
-                ),
+                )
               ],
             ),
             SizedBox(height: h * 0.02),
@@ -151,8 +136,14 @@ class _SettingScreenState extends State<SettingScreen> {
                             ),
                             SizedBox(height: h * 0.04),
                             GestureDetector(
-                              onTap: () {
-                                signOut();
+                              onTap: () async {
+                                PrefService.setValue('isLogged', false);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginScreen(),
+                                  ),
+                                );
                               },
                               child: Container(
                                 height: h * 0.06,

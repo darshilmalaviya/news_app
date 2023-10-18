@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/Common/color.dart';
 import 'package:news_app/Common/images.dart';
+import 'package:news_app/Services/Shared_pref_services/pref_service.dart';
 import 'package:news_app/View/bottom_nav_bar.dart';
 
 import 'Auth/Log_in/log_in_screen.dart';
@@ -17,37 +18,49 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool isLogged = false;
-  bool isRegistreded = false;
-
-  Future<void> checkUserAuthentication(BuildContext context) async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      // User is logged in, navigate to the home screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const MyCustomBottomNavBar(),
-        ),
-      ); // Replace with your home screen route
-    } else {
-      // User is not logged in, navigate to the login or registration screen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        ),
-      );
-    }
-  }
+  // Future<void> checkUserAuthentication(BuildContext context) async {
+  //   User? user = FirebaseAuth.instance.currentUser;
+  //
+  //   if (user != null) {
+  //     // User is logged in, navigate to the home screen
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => const MyCustomBottomNavBar(),
+  //       ),
+  //     ); // Replace with your home screen route
+  //   } else {
+  //     // User is not logged in, navigate to the login or registration screen
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => LoginScreen(),
+  //       ),
+  //     );
+  //   }
+  // }
 
   @override
   initState() {
     Timer(
       const Duration(seconds: 3),
       () {
-        checkUserAuthentication(context);
+        // checkUserAuthentication(context);
+        bool isLogged = PrefService.getBool('isLogged');
+        isLogged
+            ? Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MyCustomBottomNavBar(),
+                ),
+              )
+            : Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(),
+                ),
+              );
+        ;
       },
     );
     super.initState();

@@ -10,6 +10,8 @@ import 'package:news_app/View/Auth/Forgot_Password/forgot_password_screen.dart';
 import 'package:news_app/View/Auth/Sign_up/sign_up_screen.dart';
 import 'package:news_app/View/bottom_nav_bar.dart';
 
+import '../../../Services/Shared_pref_services/pref_service.dart';
+
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
   final formKey = GlobalKey<FormState>();
@@ -66,7 +68,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     SizedBox(height: h * 0.04),
                     TextFormField(
-                      controller: controller.Loginemail,
+                      controller: controller.loginEmail,
                       validator: (value) {
                         RegExp emailExp = RegExp(
                             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -104,7 +106,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     SizedBox(height: h * 0.03),
                     TextFormField(
-                      controller: controller.Loginpassword,
+                      controller: controller.loginPassword,
                       validator: (value) {
                         RegExp passwordExp = RegExp(
                             r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#$&*~]).{8,}$');
@@ -115,7 +117,7 @@ class LoginScreen extends StatelessWidget {
                         }
                         return null;
                       },
-                      obscureText: controller.obsecure,
+                      obscureText: controller.obSecure,
                       decoration: InputDecoration(
                         hintText: "Enter Password",
                         hintStyle: TextStyle(
@@ -133,11 +135,11 @@ class LoginScreen extends StatelessWidget {
                         ),
                         suffixIcon: IconButton(
                           onPressed: () {
-                            controller.obsecure = !controller.obsecure;
+                            controller.obSecure = !controller.obSecure;
                             controller.update(['LoginScreen']);
                           },
                           icon: Icon(
-                            controller.obsecure
+                            controller.obSecure
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             color: pickColor.black,
@@ -181,6 +183,7 @@ class LoginScreen extends StatelessWidget {
                             child: GestureDetector(
                               onTap: () async {
                                 controller.loading = true;
+                                getCntrl.update(['LoginScreen']);
                                 if (formKey.currentState!.validate()) {
                                   print("LOADING-----${controller.loading}");
                                   try {
@@ -189,21 +192,30 @@ class LoginScreen extends StatelessWidget {
                                             .auth
                                             .signInWithEmailAndPassword(
                                                 email:
-                                                    controller.Loginemail.text,
+                                                    controller.loginEmail.text,
                                                 password: controller
-                                                    .Loginpassword.text);
+                                                    .loginPassword.text);
+
+                                    await getCntrl.saved.get().then((value) {
+                                      value.docs.forEach((element) {
+                                        if (element['email'] ==
+                                            getCntrl.loginEmail.text) {
+                                          var id = element.id;
+                                          PrefService.setValue('docId', id);
+                                          PrefService.setValue(
+                                              'isLogged', true);
+                                          print(PrefService.getString('docId'));
+                                        } else {}
+                                      });
+                                    });
+
                                     if (kDebugMode) {
                                       print(
                                           "USER ID ${userCredential.user!.uid}");
                                     }
 
                                     controller.loading = false;
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text("Login Succesfully"),
-                                      ),
-                                    );
+                                    getCntrl.update(['LoginScreen']);
 
                                     Navigator.pushReplacement(
                                       context,
@@ -215,17 +227,17 @@ class LoginScreen extends StatelessWidget {
                                     controller.update(['LoginScreen']);
                                   } on FirebaseAuthException catch (e) {
                                     controller.loading = false;
-
+                                    getCntrl.update(['LoginScreen']);
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text("${e.message}"),
                                       ),
                                     );
                                   }
-                                  controller.update(['LoginScreen']);
+                                  getCntrl.update(['LoginScreen']);
                                 } else {
                                   controller.loading = false;
-                                  controller.update(['LoginScreen']);
+                                  getCntrl.update(['LoginScreen']);
                                 }
                               },
                               child: Container(

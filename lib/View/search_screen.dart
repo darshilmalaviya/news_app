@@ -60,7 +60,7 @@ class SearchScreen extends StatelessWidget {
                     padding: EdgeInsets.only(top: h * 0.005),
                     child: TextField(
                       controller: searchCntrl.searchController,
-                      onChanged: searchCntrl.filterData,
+                      onChanged: searchCntrl.searchFunc,
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         prefixIcon: Image.asset(

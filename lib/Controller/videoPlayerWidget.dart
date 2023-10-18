@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:news_app/Controller/get_x_controller.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
@@ -31,9 +32,8 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController videoPlayerController;
-
   bool isLoading = false;
+  late VideoPlayerController videoPlayerController;
 
   @override
   void initState() {
@@ -59,6 +59,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (videoPlayerController.value.hasError) {
+      return Center(
+        child: Text('Error: ${videoPlayerController.value.errorDescription}'),
+      );
+    }
+
     return videoContainer();
   }
 
@@ -80,30 +86,25 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  videoPlayerController.value.isPlaying
-                      ? videoPlayerController.pause()
-                      : videoPlayerController.play();
-                  setState(() {});
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: Get.width * 0.042,
-                  width: Get.width * 0.042,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: Icon(
-                    videoPlayerController.value.isPlaying
-                        ? Icons.pause
-                        : Icons.play_arrow,
-                    size: 10,
-                    color: const Color(0xff0F0F0F),
-                  ),
-                ),
-              ),
+              widget.showPlayPause
+                  ? GestureDetector(
+                      onTap: () {
+                        videoPlayerController.value.isPlaying
+                            ? videoPlayerController.pause()
+                            : videoPlayerController.play();
+                        setState(() {});
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Colors.transparent.withOpacity(0.4),
+                        child: Icon(
+                          videoPlayerController.value.isPlaying
+                              ? Icons.pause
+                              : Icons.play_arrow,
+                          size: widget.height * 0.15,
+                        ),
+                      ),
+                    )
+                  : SizedBox(),
             ],
           )
         : const Center(child: CircularProgressIndicator());

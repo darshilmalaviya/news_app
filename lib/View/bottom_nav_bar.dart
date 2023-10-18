@@ -23,8 +23,8 @@ class _MyCustomBottomNavBarState extends State<MyCustomBottomNavBar> {
   final List<Widget> _screens = [
     HomeScreen(),
     SearchScreen(),
-    const SavedScreen(),
-    const SettingScreen(),
+    SavedScreen(),
+    SettingScreen(),
   ];
 
   @override

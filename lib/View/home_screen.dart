@@ -7,11 +7,10 @@ import 'package:news_app/Common/color.dart';
 import 'package:news_app/Common/images.dart';
 import 'package:news_app/Controller/get_x_controller.dart';
 import 'package:news_app/Controller/search_controller.dart';
+import 'package:news_app/Services/Shared_pref_services/pref_service.dart';
 import 'package:news_app/View/detail_screen.dart';
 import 'package:news_app/View/notification_screen.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:video_player/video_player.dart';
-
 import '../Controller/videoPlayerWidget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -30,7 +29,6 @@ class HomeScreen extends StatelessWidget {
         return StreamBuilder(
           stream: getCntrl.Users.orderBy("DateTime").snapshots(),
           builder: (context, snapshot) {
-            // searchCntrl.dataList.add(snapshot.data!.docs.data());
             if (snapshot.hasData) {
               return Scaffold(
                 backgroundColor: Colors.white,
@@ -449,20 +447,6 @@ class HomeScreen extends StatelessWidget {
                                           itemBuilder: (context, index) {
                                             final item =
                                                 searchCntrl.filteredList[index];
-                                            if (item['subcategory']
-                                                        [getCntrl.DropDownColor]
-                                                    ['Data']['AssetType'] ==
-                                                'mp4') {
-                                              getCntrl.drawerVideo =
-                                                  VideoPlayerController
-                                                      .networkUrl(Uri.parse(item[
-                                                                  'subcategory']
-                                                              [
-                                                              getCntrl
-                                                                  .DropDownColor]
-                                                          ['Data']['ImageUrl']))
-                                                    ..initialize().then((_) {});
-                                            }
                                             return GestureDetector(
                                               onTap: () {
                                                 getCntrl.categoryName = item[
@@ -507,7 +491,7 @@ class HomeScreen extends StatelessWidget {
                                                 padding: EdgeInsets.only(
                                                     top: h * 0.02),
                                                 child: SizedBox(
-                                                  height: h * 0.18,
+                                                  height: h * 0.19,
                                                   child: Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.start,
@@ -667,7 +651,12 @@ class HomeScreen extends StatelessWidget {
                                                                   width:
                                                                       w * 0.01),
                                                               Text(
-                                                                "1m ago",
+                                                                item['subcategory']
+                                                                        [
+                                                                        getCntrl
+                                                                            .DropDownColor]
+                                                                    [
+                                                                    'Data']['Time'],
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize:
@@ -692,31 +681,80 @@ class HomeScreen extends StatelessWidget {
                                                                     'home'
                                                                   ]);
                                                                 },
-                                                                child: item['subcategory'][getCntrl.DropDownColor]['Data']
-                                                                            [
-                                                                            'isSaved'] ==
-                                                                        true
-                                                                    ? Icon(
-                                                                        Icons
-                                                                            .bookmark,
-                                                                        color: Colors
-                                                                            .grey,
-                                                                        size: h *
-                                                                            0.025,
-                                                                      )
-                                                                    : InkWell(
-                                                                        onTap:
-                                                                            () {},
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .bookmark_outline,
-                                                                          color:
-                                                                              Colors.grey,
-                                                                          size: h *
-                                                                              0.025,
-                                                                        ),
-                                                                      ),
+                                                                child:
+                                                                    InkResponse(
+                                                                  onTap:
+                                                                      () async {
+                                                                    if (searchCntrl
+                                                                            .isSaved[index] ==
+                                                                        true) {
+                                                                      searchCntrl
+                                                                              .isSaved[index] =
+                                                                          false;
+                                                                      searchCntrl.saved(item['subcategory'][index]
+                                                                              [
+                                                                              'Data']
+                                                                          [
+                                                                          'HeadLine']);
+                                                                    } else {
+                                                                      searchCntrl
+                                                                              .isSaved[index] =
+                                                                          true;
+                                                                      searchCntrl
+                                                                          .savedList
+                                                                          .insert(
+                                                                              0,
+                                                                              {
+                                                                            "categoryName":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Name'],
+                                                                            "assetType":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['AssetType'],
+                                                                            "headLine":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['HeadLine'],
+                                                                            "channelName":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['ChannelName'],
+                                                                            "city":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['City'],
+                                                                            "date":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['Date'],
+                                                                            "time":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['Time'],
+                                                                            "imgUrl":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['ImageUrl'],
+                                                                            "topic":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['Topic'],
+                                                                            "description":
+                                                                                item['subcategory'][getCntrl.DropDownColor]['Data']['Description'],
+                                                                            'isSaved':
+                                                                                true,
+                                                                          });
+                                                                      await searchCntrl
+                                                                          .savedCollection
+                                                                          .doc(
+                                                                              '${PrefService.getString('docId')}')
+                                                                          .update({
+                                                                        "savedList":
+                                                                            searchCntrl.savedList,
+                                                                      });
+                                                                    }
+                                                                    searchCntrl
+                                                                        .update([
+                                                                      'home'
+                                                                    ]);
+                                                                  },
+                                                                  child: Icon(
+                                                                    searchCntrl.isSaved[index] ==
+                                                                            true
+                                                                        ? Icons
+                                                                            .bookmark
+                                                                        : Icons
+                                                                            .bookmark_outline,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    size: h *
+                                                                        0.025,
+                                                                  ),
+                                                                ),
                                                               ),
                                                               SizedBox(
                                                                   width:
@@ -758,20 +796,6 @@ class HomeScreen extends StatelessWidget {
                                               padding: EdgeInsets.zero,
                                               shrinkWrap: true,
                                               itemBuilder: (context, index1) {
-                                                if (item['subcategory'][index1]
-                                                        ['Data']['AssetType'] ==
-                                                    'mp4') {
-                                                  getCntrl.homeVideo =
-                                                      VideoPlayerController
-                                                          .networkUrl(Uri.parse(
-                                                              item['subcategory']
-                                                                          [
-                                                                          index1]
-                                                                      ['Data']
-                                                                  ['ImageUrl']))
-                                                        ..initialize()
-                                                            .then((_) {});
-                                                }
                                                 return GestureDetector(
                                                   onTap: () {
                                                     getCntrl.categoryName =
@@ -819,7 +843,7 @@ class HomeScreen extends StatelessWidget {
                                                     padding: EdgeInsets.only(
                                                         top: h * 0.02),
                                                     child: SizedBox(
-                                                      height: h * 0.18,
+                                                      height: h * 0.19,
                                                       child: Row(
                                                         mainAxisAlignment:
                                                             MainAxisAlignment
@@ -850,9 +874,11 @@ class HomeScreen extends StatelessWidget {
                                                                           'AssetType'] !=
                                                                       'mp4'
                                                                   ? CachedNetworkImage(
-                                                                      imageUrl:
-                                                                          item['subcategory'][index1]['Data']['ImageUrl'] ??
-                                                                              "",
+                                                                      imageUrl: item['subcategory'][index1]
+                                                                              [
+                                                                              'Data']
+                                                                          [
+                                                                          'ImageUrl'],
                                                                       fit: BoxFit
                                                                           .cover,
                                                                       placeholder: (context,
@@ -872,10 +898,11 @@ class HomeScreen extends StatelessWidget {
                                                                           0.35,
                                                                       showPlayPause:
                                                                           false,
-                                                                      video: item['subcategory'][index1]['Data']
+                                                                      video: item['subcategory'][index1]
                                                                               [
-                                                                              'ImageUrl'] ??
-                                                                          "",
+                                                                              'Data']
+                                                                          [
+                                                                          'ImageUrl'],
                                                                       videoFrom:
                                                                           'network',
                                                                       index:
@@ -898,12 +925,13 @@ class HomeScreen extends StatelessWidget {
                                                                     h * 0.11,
                                                                 width: w * 0.53,
                                                                 child: Text(
-                                                                  item['subcategory'][index1]
+                                                                  item['subcategory']
                                                                               [
-                                                                              'Data']
+                                                                              index1]
                                                                           [
-                                                                          'HeadLine'] ??
-                                                                      "",
+                                                                          'Data']
+                                                                      [
+                                                                      'HeadLine'],
                                                                   maxLines: 3,
                                                                   overflow:
                                                                       TextOverflow
@@ -927,11 +955,8 @@ class HomeScreen extends StatelessWidget {
                                                                       h * 0.01),
                                                               Text(
                                                                 item['subcategory']
-                                                                            [
-                                                                            index1]
-                                                                        [
-                                                                        'Name'] ??
-                                                                    "",
+                                                                        [index1]
+                                                                    ['Name'],
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize:
@@ -955,10 +980,11 @@ class HomeScreen extends StatelessWidget {
                                                                     width: w *
                                                                         0.25,
                                                                     child: Text(
-                                                                      item['subcategory'][index1]['Data']
+                                                                      item['subcategory'][index1]
                                                                               [
-                                                                              'City'] ??
-                                                                          "",
+                                                                              'Data']
+                                                                          [
+                                                                          'City'],
                                                                       style:
                                                                           TextStyle(
                                                                         overflow:
@@ -985,7 +1011,11 @@ class HomeScreen extends StatelessWidget {
                                                                       width: w *
                                                                           0.01),
                                                                   Text(
-                                                                    "1m ago",
+                                                                    item['subcategory'][index1]
+                                                                            [
+                                                                            'Data']
+                                                                        [
+                                                                        'Time'],
                                                                     style:
                                                                         TextStyle(
                                                                       fontSize: h *
@@ -1002,15 +1032,53 @@ class HomeScreen extends StatelessWidget {
                                                                   SizedBox(
                                                                       width: w *
                                                                           0.01),
-                                                                  GestureDetector(
-                                                                    onTap: () {
-                                                                      controller
+                                                                  InkResponse(
+                                                                    onTap:
+                                                                        () async {
+                                                                      if (searchCntrl
+                                                                              .isSaved[index] ==
+                                                                          true) {
+                                                                        searchCntrl.isSaved[index] =
+                                                                            searchCntrl.save;
+                                                                        searchCntrl.saved(item['subcategory'][index1]['Data']
+                                                                            [
+                                                                            'HeadLine']);
+                                                                      } else {
+                                                                        searchCntrl.isSaved[index] =
+                                                                            searchCntrl.save;
+                                                                        searchCntrl
+                                                                            .savedList
+                                                                            .insert(
+                                                                                0,
+                                                                                {
+                                                                              'assetType': item['subcategory'][index1]['Data']['AssetType'],
+                                                                              'channelName': item['subcategory'][index1]['Data']['ChannelName'],
+                                                                              'categoryName': item['subcategory'][index1]['Name'],
+                                                                              'city': item['subcategory'][index1]['Data']['City'],
+                                                                              'date': item['subcategory'][index1]['Data']['Date'],
+                                                                              'description': item['subcategory'][index1]['Data']['Description'],
+                                                                              'headLine': item['subcategory'][index1]['Data']['HeadLine'],
+                                                                              'imgUrl': item['subcategory'][index1]['Data']['ImageUrl'],
+                                                                              'state': item['subcategory'][index1]['Data']['State'],
+                                                                              'time': item['subcategory'][index1]['Data']['Time'],
+                                                                              'topic': item['subcategory'][index1]['Data']['Topic'],
+                                                                              'isSaved': true,
+                                                                            });
+                                                                        await searchCntrl
+                                                                            .savedCollection
+                                                                            .doc('${PrefService.getString('docId')}')
+                                                                            .update({
+                                                                          "savedList":
+                                                                              searchCntrl.savedList,
+                                                                        });
+                                                                      }
+                                                                      searchCntrl
                                                                           .update([
                                                                         'home'
                                                                       ]);
                                                                     },
                                                                     child: Icon(
-                                                                      item['subcategory'][index1]['Data']['isSaved'] ==
+                                                                      searchCntrl.isSaved[index1] ==
                                                                               true
                                                                           ? Icons
                                                                               .bookmark
