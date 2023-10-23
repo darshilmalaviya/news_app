@@ -43,21 +43,19 @@ class _MyCustomBottomNavBarState extends State<MyCustomBottomNavBar> {
           elevation: 0,
           color: Colors.black,
           child: Container(
-            height: h * 0.085,
+            height: h * 0.09,
             alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.only(bottom: h * 0.035),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
+            padding: EdgeInsets.only(bottom: h * 0.03),
+            decoration: BoxDecoration(
+              border: Border(
+                  top: BorderSide(color: colorRes.grey, width: w * 0.0005)),
+              gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.white,
-                  pickColor.blue,
+                  colorRes.blue,
                 ],
-              ),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
               ),
             ),
             child: Row(
@@ -159,7 +157,7 @@ class CustomNavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkResponse(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,

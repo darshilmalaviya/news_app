@@ -8,6 +8,7 @@ import 'package:news_app/Controller/get_x_controller.dart';
 import 'package:news_app/Controller/search_controller.dart';
 import 'package:news_app/View/detail_screen.dart';
 import '../Common/images.dart';
+import '../Controller/videoPlayerWidget.dart';
 
 class SearchScreen extends StatelessWidget {
   SearchScreen({super.key});
@@ -20,6 +21,31 @@ class SearchScreen extends StatelessWidget {
     final h = Get.height;
     final w = Get.width;
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        toolbarHeight: h * 0.1,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(
+              "Search",
+              style: TextStyle(
+                color: colorRes.iconColor,
+                fontWeight: FontWeight.w500,
+                fontSize: h * 0.035,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            Container(
+              height: h * 0.002,
+              width: w * 0.2,
+              color: colorRes.blue,
+            )
+          ],
+        ),
+      ),
       body: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: GetBuilder<SearchCntrl>(
@@ -27,26 +53,6 @@ class SearchScreen extends StatelessWidget {
           builder: (controller) {
             return Column(
               children: [
-                SizedBox(height: h * 0.055),
-                Center(
-                  child: Text(
-                    "Search",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                      fontSize: h * 0.03,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                ),
-                Center(
-                  child: Container(
-                    height: h * 0.002,
-                    width: w * 0.2,
-                    color: pickColor.blue,
-                  ),
-                ),
-                SizedBox(height: h * 0.024),
                 Container(
                   height: h * 0.06,
                   width: w * 0.92,
@@ -54,7 +60,7 @@ class SearchScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                       6,
                     ),
-                    color: pickColor.searchTextfield,
+                    color: colorRes.searchTextfield,
                   ),
                   child: Padding(
                     padding: EdgeInsets.only(top: h * 0.005),
@@ -69,6 +75,7 @@ class SearchScreen extends StatelessWidget {
                         suffixIcon: GestureDetector(
                           onTap: () {
                             searchCntrl.searchController.clear();
+                            searchCntrl.searchData.clear();
                             searchCntrl.update(['search']);
                           },
                           child: Image.asset(
@@ -79,7 +86,7 @@ class SearchScreen extends StatelessWidget {
                         hintStyle: TextStyle(
                           fontSize: h * 0.019,
                           fontWeight: FontWeight.w400,
-                          color: pickColor.grey,
+                          color: colorRes.grey,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -91,359 +98,171 @@ class SearchScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       searchCntrl.searchData.isNotEmpty
-                          ? searchCntrl.searchHasData
-                              ? ListView.builder(
-                                  itemCount: searchCntrl.searchData.length,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, searchIndex) {
-                                    final item =
-                                        searchCntrl.searchData[searchIndex];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        getCntrl.categoryName = searchCntrl
-                                            .searchData[searchIndex]['Name'];
-                                        getCntrl.headLine =
-                                            item['Data']['HeadLine'];
-                                        getCntrl.channelName =
-                                            item['Data']['ChannelName'];
-                                        getCntrl.city = item['Data']['City'];
-                                        getCntrl.date = item['Data']['Date'];
-                                        getCntrl.time = item['Data']['Time'];
-                                        getCntrl.imgUrl =
-                                            item['Data']['ImageUrl'];
-                                        getCntrl.topic = item['Data']['Topic'];
-                                        getCntrl.description =
-                                            item['Data']['Description'];
-                                        Get.to(DetailScreen());
-                                      },
-                                      child: Padding(
-                                        padding: EdgeInsets.only(top: h * 0.02),
-                                        child: SizedBox(
-                                          height: h * 0.18,
-                                          child: Row(
+                          ? ListView.builder(
+                              itemCount: searchCntrl.searchData.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemBuilder: (context, searchIndex) {
+                                final item =
+                                    searchCntrl.searchData[searchIndex];
+                                return GestureDetector(
+                                  onTap: () {
+                                    getCntrl.categoryName = searchCntrl
+                                        .searchData[searchIndex]['Name'];
+                                    getCntrl.headLine =
+                                        item['Data']['HeadLine'];
+                                    getCntrl.channelName =
+                                        item['Data']['ChannelName'];
+                                    getCntrl.city = item['Data']['City'];
+                                    getCntrl.date = item['Data']['Date'];
+                                    getCntrl.time = item['Data']['Time'];
+                                    getCntrl.imgUrl = item['Data']['ImageUrl'];
+                                    getCntrl.topic = item['Data']['Topic'];
+                                    getCntrl.description =
+                                        item['Data']['Description'];
+                                    getCntrl.extension =
+                                        item['Data']['AssetType'];
+                                    for (int i = 0;
+                                        i < searchCntrl.savedList.length;
+                                        i++) {
+                                      if (item['Data']['HeadLine'] ==
+                                          searchCntrl.savedList[i]
+                                              ['headLine']) {
+                                        getCntrl.isSaved1 = true;
+                                      } else {
+                                        getCntrl.isSaved1 = false;
+                                      }
+                                    }
+                                    Get.to(DetailScreen());
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: h * 0.02),
+                                    child: SizedBox(
+                                      height: h * 0.18,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: h * 0.175,
+                                            width: w * 0.35,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                              child: item['Data']
+                                                          ['AssetType'] ==
+                                                      'mp4'
+                                                  ? VideoPlayerWidget(
+                                                      height: h * 0.18,
+                                                      width: w * 0.35,
+                                                      showPlayPause: false,
+                                                      video: item['Data']
+                                                          ['ImageUrl'],
+                                                      videoFrom: 'network',
+                                                      index: 0,
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      imageUrl: item['Data']
+                                                          ['ImageUrl'],
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          const Center(
+                                                              child:
+                                                                  CircularProgressIndicator()),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          const Icon(
+                                                              Icons.error),
+                                                    ),
+                                            ),
+                                          ),
+                                          SizedBox(width: w * 0.02),
+                                          Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
                                               SizedBox(
-                                                height: h * 0.175,
-                                                width: w * 0.35,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: item['Data']
-                                                        ['ImageUrl'],
-                                                    fit: BoxFit.cover,
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        const Center(
-                                                            child:
-                                                                CircularProgressIndicator()),
-                                                    errorWidget: (context, url,
-                                                            error) =>
-                                                        const Icon(Icons.error),
+                                                height: h * 0.1,
+                                                width: w * 0.54,
+                                                child: Text(
+                                                  item['Data']['HeadLine'],
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: h * 0.018,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.black,
+                                                    fontFamily: 'Poppins',
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: w * 0.02),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                              SizedBox(height: h * 0.01),
+                                              Text(
+                                                "${searchCntrl.searchData[searchIndex]['Name']}",
+                                                style: TextStyle(
+                                                  fontSize: h * 0.017,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: colorRes.grey,
+                                                  fontFamily: 'Poppins',
+                                                ),
+                                              ),
+                                              SizedBox(height: h * 0.01),
+                                              Row(
                                                 children: [
                                                   SizedBox(
-                                                    height: h * 0.1,
-                                                    width: w * 0.54,
+                                                    width: w * 0.29,
                                                     child: Text(
-                                                      item['Data']['HeadLine'],
-                                                      maxLines: 3,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
+                                                      item['Data']['City'],
                                                       style: TextStyle(
-                                                        fontSize: h * 0.018,
+                                                        color: Colors.blue,
                                                         fontWeight:
                                                             FontWeight.w400,
-                                                        color: Colors.black,
+                                                        fontSize: h * 0.017,
                                                         fontFamily: 'Poppins',
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(height: h * 0.01),
+                                                  CircleAvatar(
+                                                    maxRadius: h * 0.005,
+                                                    backgroundColor:
+                                                        Colors.grey,
+                                                  ),
+                                                  SizedBox(width: w * 0.02),
                                                   Text(
-                                                    "${searchCntrl.searchData[searchIndex]['Name']}",
+                                                    item['Data']['Time'],
                                                     style: TextStyle(
-                                                      fontSize: h * 0.017,
+                                                      fontSize: h * 0.016,
                                                       fontWeight:
                                                           FontWeight.w400,
-                                                      color: pickColor.grey,
+                                                      color: colorRes.grey,
                                                       fontFamily: 'Poppins',
                                                     ),
-                                                  ),
-                                                  SizedBox(height: h * 0.01),
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: w * 0.29,
-                                                        child: Text(
-                                                          item['Data']['City'],
-                                                          style: TextStyle(
-                                                            color: Colors.blue,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            fontSize: h * 0.017,
-                                                            fontFamily:
-                                                                'Poppins',
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      CircleAvatar(
-                                                        maxRadius: h * 0.005,
-                                                        backgroundColor:
-                                                            Colors.grey,
-                                                      ),
-                                                      SizedBox(width: w * 0.02),
-                                                      Text(
-                                                        item['Data']['Time'],
-                                                        style: TextStyle(
-                                                          fontSize: h * 0.016,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: pickColor.grey,
-                                                          fontFamily: 'Poppins',
-                                                        ),
-                                                      ),
-                                                    ],
                                                   ),
                                                 ],
                                               ),
                                             ],
                                           ),
-                                        ),
+                                        ],
                                       ),
-                                    );
-                                  },
-                                )
-                              : SizedBox(
-                                  height: h * 0.74,
-                                  child: ListView.builder(
-                                    physics: const BouncingScrollPhysics(),
-                                    itemCount: searchCntrl.searchData.length,
-                                    padding: EdgeInsets.zero,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      final item =
-                                          searchCntrl.searchData[index];
-
-                                      return ListView.builder(
-                                        itemCount: searchCntrl
-                                            .searchData[index]['subcategory']
-                                            .length,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        padding: EdgeInsets.zero,
-                                        shrinkWrap: true,
-                                        itemBuilder: (context, searchIndex) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              getCntrl.categoryName =
-                                                  item['subcategory']
-                                                      [searchIndex]['Name'];
-                                              getCntrl.headLine =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['HeadLine'];
-                                              getCntrl.channelName =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['ChannelName'];
-                                              getCntrl.city =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['City'];
-                                              getCntrl.date =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['Date'];
-                                              getCntrl.time =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['Time'];
-                                              getCntrl.imgUrl =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['ImageUrl'];
-                                              getCntrl.topic =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['Topic'];
-                                              getCntrl.description =
-                                                  item['subcategory']
-                                                          [searchIndex]['Data']
-                                                      ['Description'];
-                                              Get.to(DetailScreen());
-                                            },
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: h * 0.02),
-                                              child: SizedBox(
-                                                height: h * 0.18,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: h * 0.175,
-                                                      width: w * 0.35,
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(6),
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          imageUrl: item[
-                                                                      'subcategory']
-                                                                  [searchIndex][
-                                                              'Data']['ImageUrl'],
-                                                          fit: BoxFit.cover,
-                                                          placeholder: (context,
-                                                                  url) =>
-                                                              const Center(
-                                                                  child:
-                                                                      CircularProgressIndicator()),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              const Icon(
-                                                                  Icons.error),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: w * 0.02),
-                                                    Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        SizedBox(
-                                                          height: h * 0.1,
-                                                          width: w * 0.54,
-                                                          child: Text(
-                                                            item['subcategory'][
-                                                                        searchIndex]
-                                                                    ['Data']
-                                                                ['HeadLine'],
-                                                            maxLines: 3,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: TextStyle(
-                                                              fontSize:
-                                                                  h * 0.018,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color:
-                                                                  Colors.black,
-                                                              fontFamily:
-                                                                  'Poppins',
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                            height: h * 0.01),
-                                                        Text(
-                                                          item['subcategory']
-                                                                  [searchIndex]
-                                                              ['Name'],
-                                                          style: TextStyle(
-                                                            fontSize: h * 0.017,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            color:
-                                                                pickColor.grey,
-                                                            fontFamily:
-                                                                'Poppins',
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                            height: h * 0.01),
-                                                        Row(
-                                                          children: [
-                                                            SizedBox(
-                                                              width: w * 0.29,
-                                                              child: Text(
-                                                                item['subcategory']
-                                                                            [
-                                                                            searchIndex]
-                                                                        ['Data']
-                                                                    ['City'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .blue,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  fontSize:
-                                                                      h * 0.017,
-                                                                  fontFamily:
-                                                                      'Poppins',
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            CircleAvatar(
-                                                              maxRadius:
-                                                                  h * 0.005,
-                                                              backgroundColor:
-                                                                  Colors.grey,
-                                                            ),
-                                                            SizedBox(
-                                                                width:
-                                                                    w * 0.02),
-                                                            Text(
-                                                              item['subcategory']
-                                                                      [
-                                                                      searchIndex]
-                                                                  [
-                                                                  'Data']['Time'],
-                                                              style: TextStyle(
-                                                                fontSize:
-                                                                    h * 0.016,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                color: pickColor
-                                                                    .grey,
-                                                                fontFamily:
-                                                                    'Poppins',
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
+                                    ),
                                   ),
-                                )
-                          : const Center(
-                              child: Text(
-                                "No data found",
+                                );
+                              },
+                            )
+                          : Padding(
+                              padding: EdgeInsets.only(top: h * 0.02),
+                              child: Center(
+                                child: Text(
+                                  "No recent search",
+                                  style: TextStyle(fontSize: h * 0.02),
+                                ),
                               ),
                             ),
                     ],

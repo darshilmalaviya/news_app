@@ -20,44 +20,46 @@ class SettingScreen extends StatelessWidget {
     final w = Get.width;
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        toolbarHeight: h * 0.1,
+        backgroundColor: Colors.white,
+        title: Column(children: [
+          Text(
+            "Settings",
+            style: TextStyle(
+              color: colorRes.iconColor,
+              fontWeight: FontWeight.w500,
+              fontSize: h * 0.035,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          Container(
+            height: h * 0.002,
+            width: w * 0.24,
+            color: colorRes.blue,
+          ),
+        ]),
+      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: w * 0.04),
         child: Column(
           children: [
-            SizedBox(height: h * 0.055),
-            Center(
-              child: Text(
-                "Settings",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500,
-                  fontSize: h * 0.03,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ),
-            Center(
-              child: Container(
-                height: h * 0.002,
-                width: w * 0.2,
-                color: pickColor.blue,
-              ),
-            ),
-            SizedBox(height: h * 0.04),
             Row(
               children: [
                 Image.asset(
                   CommonImg.Notification,
-                  height: h * 0.05,
-                  width: w * 0.05,
+                  height: h * 0.07,
+                  width: w * 0.07,
                 ),
-                SizedBox(width: w * 0.02),
+                SizedBox(width: w * 0.03),
                 Text(
                   "Push Notifications",
                   style: TextStyle(
-                    fontSize: h * 0.02,
+                    fontSize: h * 0.025,
                     fontWeight: FontWeight.w400,
-                    color: pickColor.grey,
+                    color: Colors.black,
                     fontFamily: 'Poppins',
                   ),
                 ),
@@ -71,17 +73,17 @@ class SettingScreen extends StatelessWidget {
                         isSwitched = value;
                         getCntrl.update(['setting']);
                       },
-                      inactiveThumbColor: pickColor.blue,
-                      inactiveTrackColor: pickColor.black,
-                      activeTrackColor: pickColor.blue,
-                      activeColor: pickColor.blue,
+                      inactiveThumbColor: colorRes.blue,
+                      inactiveTrackColor: colorRes.black,
+                      activeTrackColor: colorRes.blue,
+                      activeColor: colorRes.blue,
                     );
                   },
                 )
               ],
             ),
             SizedBox(height: h * 0.02),
-            const Divider(thickness: 1, height: 1, color: pickColor.blue),
+            const Divider(thickness: 1, height: 1, color: colorRes.blue),
             GestureDetector(
               onTap: () {
                 showDialog(
@@ -102,19 +104,27 @@ class SettingScreen extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                InkWell(
+                                InkResponse(
                                   onTap: () {
-                                    Navigator.of(context).pop();
+                                    Get.back();
                                   },
                                   child: Image.asset(
                                     CommonImg.cancle,
+                                    height: h * 0.03,
+                                    width: w * 0.03,
                                   ),
                                 ),
                                 SizedBox(width: w * 0.04),
                               ],
                             ),
                             SizedBox(height: h * 0.03),
-                            Image.asset(CommonImg.LogOutBlue),
+                            SizedBox(
+                              height: h * 0.1,
+                              child: Image.asset(
+                                fit: BoxFit.cover,
+                                CommonImg.LogOutBlue,
+                              ),
+                            ),
                             SizedBox(height: h * 0.03),
                             Text(
                               "Are you sure you want",
@@ -135,35 +145,65 @@ class SettingScreen extends StatelessWidget {
                               ),
                             ),
                             SizedBox(height: h * 0.04),
-                            GestureDetector(
-                              onTap: () async {
-                                PrefService.setValue('isLogged', false);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginScreen(),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                height: h * 0.06,
-                                width: w * 0.5,
-                                decoration: BoxDecoration(
-                                  color: pickColor.blue,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "Logout",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: h * 0.02,
-                                      fontFamily: 'Poppins',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    PrefService.setValue('isLogged', false);
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: h * 0.06,
+                                    width: w * 0.25,
+                                    decoration: BoxDecoration(
+                                      color: colorRes.blue,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: h * 0.03,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Get.back();
+                                  },
+                                  child: Container(
+                                    height: h * 0.06,
+                                    width: w * 0.25,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                          color: colorRes.blue, width: 1),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "No",
+                                        style: TextStyle(
+                                          color: colorRes.blue,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: h * 0.03,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -173,36 +213,37 @@ class SettingScreen extends StatelessWidget {
                 );
               },
               child: Container(
+                margin: EdgeInsets.symmetric(vertical: h * 0.001),
                 color: Colors.transparent,
                 height: h * 0.09,
                 child: Row(
                   children: [
                     Image.asset(
                       CommonImg.LogOut,
-                      height: h * 0.05,
-                      width: w * 0.05,
+                      height: h * 0.07,
+                      width: w * 0.07,
                     ),
-                    SizedBox(width: w * 0.02),
+                    SizedBox(width: w * 0.03),
                     Text(
                       "Logout",
                       style: TextStyle(
-                        fontSize: h * 0.02,
+                        fontSize: h * 0.025,
                         fontWeight: FontWeight.w400,
-                        color: pickColor.grey,
+                        color: Colors.black,
                         fontFamily: 'Poppins',
                       ),
                     ),
                     const Spacer(),
                     Image.asset(
                       CommonImg.ArrowSetting,
-                      height: 22,
-                      width: 22,
+                      height: h * 0.02,
+                      width: w * 0.08,
                     ),
                   ],
                 ),
               ),
             ),
-            const Divider(thickness: 1, height: 1, color: pickColor.blue),
+            const Divider(thickness: 1, height: 1, color: colorRes.blue),
           ],
         ),
       ),

@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:news_app/Common/color.dart';
 import 'package:news_app/Common/images.dart';
 import 'package:news_app/Services/Shared_pref_services/pref_service.dart';
@@ -18,34 +19,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // Future<void> checkUserAuthentication(BuildContext context) async {
-  //   User? user = FirebaseAuth.instance.currentUser;
-  //
-  //   if (user != null) {
-  //     // User is logged in, navigate to the home screen
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => const MyCustomBottomNavBar(),
-  //       ),
-  //     ); // Replace with your home screen route
-  //   } else {
-  //     // User is not logged in, navigate to the login or registration screen
-  //     Navigator.pushReplacement(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => LoginScreen(),
-  //       ),
-  //     );
-  //   }
-  // }
-
   @override
   initState() {
     Timer(
       const Duration(seconds: 3),
       () {
-        // checkUserAuthentication(context);
         bool isLogged = PrefService.getBool('isLogged');
         isLogged
             ? Navigator.pushReplacement(
@@ -60,7 +38,6 @@ class _SplashScreenState extends State<SplashScreen> {
                   builder: (context) => LoginScreen(),
                 ),
               );
-        ;
       },
     );
     super.initState();
@@ -82,14 +59,16 @@ class _SplashScreenState extends State<SplashScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomLeft,
                   colors: [
-                    pickColor.SplashtopArea,
-                    pickColor.SplashbottomArea,
+                    colorRes.SplashtopArea,
+                    colorRes.SplashbottomArea,
                   ],
                 ),
               ),
               child: Center(
                 child: Image.asset(
                   CommonImg.splashLogo,
+                  height: Get.height * 0.55,
+                  width: Get.width * 0.55,
                 ),
               ),
             ),

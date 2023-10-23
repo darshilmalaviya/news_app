@@ -127,7 +127,7 @@ class SignUpScreen extends StatelessWidget {
                             controller.obSecure
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color: pickColor.black,
+                            color: colorRes.black,
                           ),
                           onPressed: () {
                             controller.obSecure = !controller
@@ -183,7 +183,7 @@ class SignUpScreen extends StatelessWidget {
                             controller.obSecure
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color: pickColor.black,
+                            color: colorRes.black,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
@@ -249,7 +249,7 @@ class SignUpScreen extends StatelessWidget {
                                 height: h * 0.07,
                                 width: w * 0.7,
                                 decoration: BoxDecoration(
-                                  color: pickColor.blue,
+                                  color: colorRes.blue,
                                   borderRadius: BorderRadius.circular(
                                     7,
                                   ),

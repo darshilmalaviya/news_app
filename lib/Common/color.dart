@@ -1,7 +1,10 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 
-class pickColor {
+class colorRes {
   static const blue = Color(0xff006BF6);
+  static const border = Color(0xff006BF6);
   static const black = Color(0xffB3B3B3);
   static const grey = Color(0xff808080);
   static const Detailgrey = Color(0xff333333);
@@ -10,4 +13,5 @@ class pickColor {
   static const searchTextfield = Color(0xffE6E6E6);
   static const SplashtopArea = Color(0xffffffff);
   static const SplashbottomArea = Color(0xffAED1FF);
+  static const iconColor = Color(0xfff060606);
 }

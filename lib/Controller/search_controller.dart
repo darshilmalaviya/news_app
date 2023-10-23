@@ -11,14 +11,15 @@ class SearchCntrl extends GetxController {
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> filteredList = [];
   List<Map<String, dynamic>> searchData = [];
-  bool searchHasData = false;
-  bool save = false;
   List<bool> isSaved = [];
+  bool isDataLoading = false;
+  RxBool loader = false.obs;
 
   CollectionReference savedCollection =
       FirebaseFirestore.instance.collection('saved');
 
   Future<List<Map<String, dynamic>>?> fetchFirestoreData() async {
+    isDataLoading = true;
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection('categories').get();
 
@@ -27,7 +28,8 @@ class SearchCntrl extends GetxController {
           document.data() as Map<String, dynamic>;
       dataList.add(documentData);
     }
-
+    isDataLoading = false;
+    update(['home']);
     return dataList;
   }
 
@@ -41,12 +43,11 @@ class SearchCntrl extends GetxController {
   }
 
   void searchFunc(String query) {
-    searchData = [];
+    searchData.clear();
     dataList.forEach((map) {
       map['subcategory'].forEach((e) {
         if (e['Name'].toString().toLowerCase().contains(query.toLowerCase())) {
-          searchData.add(e /*['Data']*/);
-          searchHasData = true;
+          searchData.add(e);
           update(['search']);
         }
       });
@@ -56,7 +57,6 @@ class SearchCntrl extends GetxController {
 
   void drawerFilter({required String query, required int index}) {
     filteredList.clear();
-
     for (int i = 0; i < dataList.length; i++) {
       dataList[i]['subcategory'].forEach(
         (e) {
@@ -74,48 +74,17 @@ class SearchCntrl extends GetxController {
     for (int i = 0; i < dataList.length; i++) {
       if (dataList[i]['category'].toLowerCase() == query.toLowerCase()) {
         filteredList.add(dataList[i]);
+        break;
       }
       update(['home']);
     }
   }
 
-  saved(query) {
-    savedDemo();
-    for (int i = 0; i < savedList.length; i++) {
-      if (savedList[i]['headLine'] == query) {
-        save = true;
-        print(save);
-        print("INDEX ------- > $i");
-        FirebaseFirestore.instance.collection('saved').get().then((value) {
-          print("INDEX----->${i}");
-        });
-      }
-    }
-  }
-
-  // int i = 0;
-  // matchData() {
-  //   for (int i = 0; i < dataList.length; i++) {
-  //     dataList[i]['subcategory'].forEach((e) {
-  //       print(e);
-  //       for (int K = 0; K < savedList.length; K++) {
-  //         if (e['Data']['HeadLine'] == savedList[K]['headLine']) {
-  //           isSaved[K] = true;
-  //           i = K;
-  //           update(['home']);
-  //         }
-  //       }
-  //     });
-  //   }
-  // }
-
   data() async {
     await fetchFirestoreData();
     index();
     await savedDemo();
-    // matchData();
     filteredList.addAll(dataList);
-    searchData.addAll(dataList);
     Get.forceAppUpdate();
   }
 

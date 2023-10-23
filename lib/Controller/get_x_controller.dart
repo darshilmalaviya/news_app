@@ -30,9 +30,11 @@ class GetCntrl extends GetxController {
       FirebaseFirestore.instance.collection('categories');
   CollectionReference saved = FirebaseFirestore.instance.collection('saved');
   List<bool> showDropDown = List.generate(0, (index) => false);
+  List<bool> isSaved = [];
+  // bool isNewsSaved = false;
 
   // detail screen
-  bool isIconChanged = false;
+
   int categories1 = 0;
   String categoryName = '';
   String headLine = '';

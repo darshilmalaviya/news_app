@@ -22,6 +22,15 @@ class DetailScreen extends StatelessWidget {
     return GetBuilder<GetCntrl>(
       id: 'detail',
       builder: (controller) {
+        // for (int i = 0; i < searchCntrl.savedList.length; i++) {
+        //   if (getCntrl.headLine == searchCntrl.savedList[i]['headLine']) {
+        //     getCntrl.isNewsSaved = true;
+        //     getCntrl.update(['detail']);
+        //   } else {
+        //     getCntrl.isNewsSaved = false;
+        //     getCntrl.update(['detail']);
+        //   }
+        // }
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -52,45 +61,64 @@ class DetailScreen extends StatelessWidget {
                 Container(
                   height: h * 0.002,
                   width: getCntrl.categoryName.length * 8.5,
-                  color: pickColor.blue,
+                  color: colorRes.blue,
                 ),
               ],
             ),
             actions: [
               InkResponse(
                 onTap: () async {
-                  getCntrl.isIconChanged = !getCntrl.isIconChanged;
-                  getCntrl.update(['detail']);
-                  searchCntrl.savedList.insert(0, {
-                    "categoryName": getCntrl.categoryName,
-                    "assetType": getCntrl.extension,
-                    "headLine": getCntrl.headLine,
-                    "channelName": getCntrl.channelName,
-                    "city": getCntrl.city,
-                    "date": getCntrl.date,
-                    "time": getCntrl.time,
-                    "imgUrl": getCntrl.imgUrl,
-                    "topic": getCntrl.topic,
-                    "description": getCntrl.description,
-                    'isSaved': true,
-                  });
-                  await searchCntrl.savedCollection
-                      .doc('${PrefService.getString('docId')}')
-                      .update({
-                    "savedList": searchCntrl.savedList,
-                  });
-                  getCntrl.update(['detail']);
+                  if (getCntrl.isSaved1 != false) {
+                    getCntrl.isSaved1 = false;
+                    int removeAt = 0;
+                    for (int i = 0; i < searchCntrl.savedList.length; i++) {
+                      if (getCntrl.headLine ==
+                          searchCntrl.savedList[i]['headLine']) {
+                        removeAt = i;
+                      }
+                    }
+                    searchCntrl.savedList.removeAt(removeAt);
+                    await searchCntrl.savedCollection
+                        .doc(PrefService.getString('docId'))
+                        .update({
+                      "savedList": searchCntrl.savedList,
+                    });
+                    getCntrl.update(['detail']);
+                    getCntrl.update(['home']);
+                  } else {
+                    getCntrl.isSaved1 = true;
+                    searchCntrl.savedList.insert(0, {
+                      "categoryName": getCntrl.categoryName,
+                      "assetType": getCntrl.extension,
+                      "headLine": getCntrl.headLine,
+                      "channelName": getCntrl.channelName,
+                      "city": getCntrl.city,
+                      "date": getCntrl.date,
+                      "time": getCntrl.time,
+                      "imgUrl": getCntrl.imgUrl,
+                      "topic": getCntrl.topic,
+                      "description": getCntrl.description,
+                      'isSaved': true,
+                    });
+                    await searchCntrl.savedCollection
+                        .doc(PrefService.getString('docId'))
+                        .update({
+                      "savedList": searchCntrl.savedList,
+                    });
+                    getCntrl.update(['detail']);
+                    getCntrl.update(['home']);
+                  }
                 },
-                child: getCntrl.isIconChanged
+                child: getCntrl.isSaved1
                     ? Icon(
                         Icons.bookmark,
                         size: h * 0.03,
-                        color: Colors.grey,
+                        color: Colors.black,
                       )
                     : Icon(
                         Icons.bookmark_outline,
                         size: h * 0.03,
-                        color: Colors.grey,
+                        color: Colors.black,
                       ),
               ),
               SizedBox(width: w * 0.02),
@@ -102,14 +130,14 @@ class DetailScreen extends StatelessWidget {
               SizedBox(width: w * 0.03),
             ],
           ),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: w * 0.04),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: w * 0.04),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -129,7 +157,7 @@ class DetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: h * 0.019,
                           fontWeight: FontWeight.w600,
-                          color: pickColor.Detailgrey,
+                          color: colorRes.Detailgrey,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -138,7 +166,7 @@ class DetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: h * 0.019,
                           fontWeight: FontWeight.w500,
-                          color: pickColor.grey,
+                          color: colorRes.grey,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -173,7 +201,7 @@ class DetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: h * 0.022,
                             fontWeight: FontWeight.w600,
-                            color: pickColor.HinduNewsgrey,
+                            color: colorRes.HinduNewsgrey,
                             fontFamily: 'Poppins',
                           ),
                         ),
@@ -184,15 +212,15 @@ class DetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: h * 0.023,
                           fontWeight: FontWeight.w400,
-                          color: pickColor.grey,
+                          color: colorRes.grey,
                           fontFamily: 'Poppins',
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

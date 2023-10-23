@@ -1,5 +1,5 @@
 class CommonImg {
-  static const splashLogo = 'assets/images/LOGO.png';
+  static const splashLogo = 'assets/images/splash_logo.png';
   static const mail = 'assets/images/mail.png';
   static const cancle = 'assets/images/cancle.png';
   static const password = 'assets/images/password.png';
@@ -24,4 +24,6 @@ class CommonImg {
   static const LogOutBlue = 'assets/images/Log_Out_Blue.png';
   static const searchTextField = 'assets/images/Search_s.png';
   static const cancleTextField = 'assets/images/cancel_s.png';
+  static const saveOutLined = 'assets/images/save_outline.png';
+  static const save = 'assets/images/save.png';
 }

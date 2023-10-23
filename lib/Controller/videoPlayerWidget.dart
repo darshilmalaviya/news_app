@@ -61,7 +61,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Widget build(BuildContext context) {
     if (videoPlayerController.value.hasError) {
       return Center(
-        child: Text('Error: ${videoPlayerController.value.errorDescription}'),
+        child: Icon(Icons.error_outline_rounded),
       );
     }
 
@@ -74,12 +74,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             alignment: Alignment.center,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(6),
                 child: Container(
                   height: widget.height,
                   width: widget.width,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: VideoPlayer(
                     videoPlayerController,
